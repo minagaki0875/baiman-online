@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><title>トランプUNO</title>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>トランプUNO</title>
 <style>
 :root{--bg:#0f5132;--card:#fff;--red:#c0392b;--black:#111}
 *{box-sizing:border-box;font-family:sans-serif}
@@ -100,6 +100,48 @@ button.on{background:#2ecc71;color:#fff}
 @keyframes doraglow2{0%,100%{text-shadow:0 0 6px rgba(244,196,48,.6)}50%{text-shadow:0 0 16px rgba(255,221,89,1)}}
 table{width:100%;border-collapse:collapse}
 td,th{padding:6px;border-bottom:1px solid rgba(255,255,255,.2);text-align:left}
+
+/* ===== スマホ対応 ===== */
+html,body{width:100%;min-width:0;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+body{padding-bottom:env(safe-area-inset-bottom);}
+#app{width:100%;max-width:560px;margin:0 auto;padding:12px 10px calc(24px + env(safe-area-inset-bottom));overflow:hidden;}
+img,svg,canvas{max-width:100%;}
+input,button,select{font-size:16px;}
+button{min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+input{min-height:44px;}
+.row{width:100%;align-items:center;}
+.box{width:100%;overflow:hidden;}
+table{table-layout:fixed;font-size:13px;}
+td,th{padding:6px 3px;word-break:break-word;overflow-wrap:anywhere;}
+.card{width:50px;height:70px;font-size:14px;flex:0 0 auto;}
+.back{width:50px;height:70px;flex:0 0 auto;}
+.deckstack{width:66px;height:82px;}
+.deckstack .back:nth-child(1){left:0;top:6px}.deckstack .back:nth-child(2){left:4px;top:3px}.deckstack .back:nth-child(3){left:8px;top:0}
+.top{gap:8px;flex-wrap:wrap;}
+.onlinehand{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding:8px 3px 12px;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+.onlinehand button{flex:0 0 auto;background:transparent;}
+.online-wait{width:100%;overflow:hidden;text-align:center;}
+.deckvis{font-size:64px;line-height:1.1;margin:8px auto;display:flex;align-items:center;justify-content:center;gap:10px;}
+.deckvis span{font-size:22px;background:rgba(0,0,0,.3);border-radius:999px;padding:4px 10px;}
+.bigcard .card{width:78px;height:108px;font-size:22px;margin:4px auto;}
+.waittitle{font-size:20px;font-weight:900;color:#f4c430;margin:14px 4px;}
+.passwrap{padding:24px 4px;}
+.passname{font-size:26px;}
+.agari{font-size:clamp(42px,14vw,64px);}
+.stage{padding:14px 8px;}
+.stage input[type=number]{max-width:120px;}
+.counter{font-size:clamp(56px,20vw,88px);}
+.hand{max-width:100%;}
+.hand button{touch-action:manipulation;}
+@media (max-width:380px){
+  #app{padding-left:7px;padding-right:7px;}
+  .card{width:44px;height:62px;font-size:13px;}
+  .mini .card{width:30px;height:43px;font-size:10px;}
+  h1{font-size:18px;}
+  .waittitle{font-size:18px;}
+}
+@media (min-width:561px){#app{padding-left:16px;padding-right:16px;}}
+
 </style></head>
 <body><div id="app"></div>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -720,7 +762,7 @@ function olGuestRender(){
 function canGuest(c,g){if(g.pendingDraw>0)return c.rank===2||c.rank===0;if(c.rank===0)return true;if(g.reqSuit)return g.reqSuit.includes(c.suit);return (g.matchSuits||[]).includes(c.suit)||(g.matchRanks||[]).includes(c.rank)}
 function olToggle(i){if(!OL.selected)OL.selected=[];if(OL.selected.includes(i))OL.selected=OL.selected.filter(x=>x!==i);else if(OL.selected.length===0)OL.selected=[i];else{const h=OL.myHand;const a=h[OL.selected[0]],c=h[i];if(c.rank===0||a.rank===0)return;if(gDummyPending()&&c.rank!==2)return;const sameR=OL.selected.every(x=>h[x].rank===a.rank)&&c.rank===a.rank;const sameS=OL.selected.every(x=>h[x].suit===a.suit)&&c.suit===a.suit;if(!sameR&&!sameS)return;OL.selected.push(i)}olGuestRender()}
 function gDummyPending(){return OL.GS?.pendingDraw>0}
-function olBoard(g){return `<div class="box"><span class="dora">ドラ: ${doraLabel(g.dora)}</span> レート: ${g.rate}</div><table><tr>${g.players.map((p,i)=>`<th>${i===g.turn?'▶ ':''}${olEsc(p.name)}</th>`).join('')}</tr><tr>${g.players.map(p=>`<td>${p.score}</td>`).join('')}</tr><tr>${g.players.map((p,i)=>`<td class="cnt">手札 <b>${i===OL.myIndex?(OL.myHand?.length||0):'？'}</b>枚</td>`).join('')}</tr></table>`}
+function olBoard(g){return `<div class="box"><span class="dora">ドラ: ${doraLabel(g.dora)}</span> レート: ${g.rate}</div><table><tr>${g.players.map((p,i)=>`<th>${i===g.turn?'▶ ':''}${olEsc(p.name)}</th>`).join('')}</tr><tr>${g.players.map(p=>`<td>${p.score}</td>`).join('')}</tr><tr>${g.players.map((p,i)=>`<td class="cnt">手札 <b>${i===OL.myIndex?(OL.myHand?.length||0):(p.handCount??p.count??'—')}</b>枚</td>`).join('')}</tr></table>`}
 function olReveal(g){const w=g.win;if(!w){return}const winner=w.winners[w.i];const mine=winner===OL.myIndex;
   if(w.stage==='choose'){
     const N=g.deckCount;document.getElementById('app').innerHTML=`<div class="stage"><h2>🎉 ${olEsc(g.players[winner].name)} あがり!</h2><div class="sub">公開カードを選択</div><div class="deckstack"><div class="back"></div><div class="back"></div><div class="back"></div></div><div class="sub">山札は残り <b>${N}</b>枚<br>1〜${N}から選択</div>${mine?`<input type="number" id="opick" min="1" max="${N}" value="1"><div class="row"><button onclick="olAction('confirmPick',+document.getElementById('opick').value)">この数字でめくる!</button><button class="sec" onclick="olAction('randomPick')">🎲 おまかせ</button></div>`:`<div class="waittitle">${olEsc(g.players[winner].name)}さんが選択中…</div>`}</div>`;return}
